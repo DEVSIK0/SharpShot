@@ -1,49 +1,86 @@
-// Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use image::{imageops, imageops::FilterType};
 use screenshots::Screen;
-// Usa SIEMPRE el image re-exportado por `screenshots` para evitar choques de tipos
-use screenshots::image::{self, imageops::FilterType, RgbaImage};
-use std::{error::Error, path::PathBuf};
+use serde::Serialize;
 
-fn pick_primary_screen() -> Option<Screen> {
-    let mut screens = Screen::all().ok()?;
-    if screens.is_empty() {
-        return None;
-    }
-    if let Some(s) = screens.iter().find(|s| s.display_info.x == 0 && s.display_info.y == 0) {
-        return Some(s.clone());
-    }
-    Some(screens.swap_remove(0))
+#[derive(Serialize, Clone)]
+struct Monitor {
+    id: u32,
+    name: String,
+    width: u32,
+    height: u32,
+    is_primary: bool,
 }
 
-/// Captura el monitor principal, escala x2 y guarda `screenshot_scaled.png` en el cwd.
-/// Devuelve la ruta absoluta al archivo.
 #[tauri::command]
-fn capture_and_scale_x2() -> Result<String, String> {
-    let screen = pick_primary_screen().ok_or("No se encontró ningún monitor")?;
-    let rgba: RgbaImage = screen.capture().map_err(|e| e.to_string())?;
+fn list_monitors() -> Result<Vec<Monitor>, String> {
+    let screens = Screen::all().map_err(|e| e.to_string())?;
+    if screens.is_empty() {
+        return Err("No se encontraron monitores.".to_string());
+    }
 
-    let w = rgba.width();
-    let h = rgba.height();
+    let monitors: Vec<Monitor> = screens
+        .iter()
+        .map(|screen| {
+            let info = &screen.display_info;
+            Monitor {
+                id: info.id,
+                name: format!(
+                    "Monitor {} ({}x{}){}",
+                    info.id,
+                    info.width,
+                    info.height,
+                    if info.is_primary { " - Principal" } else { "" }
+                ),
+                width: info.width,
+                height: info.height,
+                is_primary: info.is_primary,
+            }
+        })
+        .collect();
 
-    let target_w = w.saturating_mul(2);
-    let target_h = h.saturating_mul(2);
+    Ok(monitors)
+}
 
-    // Para 3D/escenarios suele ir muy bien Lanczos3. Cambia a CatmullRom si ves halos en HUD.
-    let filter = FilterType::Lanczos3;
-    let up = image::imageops::resize(&rgba, target_w, target_h, filter);
+#[tauri::command]
+fn capture_and_scale(monitor_id: u32, scale: f32, save_path: String) -> Result<String, String> {
+    if !(1.0..=5.0).contains(&scale) {
+        return Err(format!(
+            "El factor de escala debe estar entre 1.0 y 5.0, pero se recibió {}.",
+            scale
+        ));
+    }
 
-    let mut out_path = std::env::current_dir().map_err(|e| e.to_string())?;
-    out_path.push("screenshot_scaled.png");
-    up.save(&out_path).map_err(|e| e.to_string())?;
+    let screens = Screen::all().map_err(|e| e.to_string())?;
+    let screen = screens
+        .iter()
+        .find(|s| s.display_info.id == monitor_id)
+        .ok_or(format!("Monitor con ID {} no encontrado.", monitor_id))?;
 
+    let rgba = screen.capture().map_err(|e| e.to_string())?;
+    let (w, h) = (rgba.width(), rgba.height());
+
+    let target_w = (w as f32 * scale).round() as u32;
+    let target_h = (h as f32 * scale).round() as u32;
+
+    if target_w == 0 || target_h == 0 {
+        return Err(
+            "El factor de escala es demasiado pequeño o el redondeo resultó en tamaño cero."
+                .to_string(),
+        );
+    }
+    let out_path = std::path::PathBuf::from(save_path);
+    let scaled_image = imageops::resize(&rgba, target_w, target_h, FilterType::Lanczos3);
+    scaled_image.save(&out_path).map_err(|e| e.to_string())?;
     Ok(out_path.to_string_lossy().to_string())
 }
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![capture_and_scale_x2])
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .invoke_handler(tauri::generate_handler![list_monitors, capture_and_scale])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
