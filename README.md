@@ -1,6 +1,10 @@
 # Sharpshot
 
-Sharpshot is a lightweight, high-performance screen capture utility built with **Tauri**, **Vue 3**, and **Rust**. It focuses on providing a clean, neumorphic user interface with advanced scaling capabilities for crystal-clear screenshots.
+![Sharpshot mockup](docs/resources/mockup.webp)
+
+Sharpshot is a lightweight, high-performance screen capture app built with **Tauri**, **Vue 3**, and **Rust**. It delivers fast captures, a clean neumorphic UI, and advanced scaling so screenshots look crisp even when you need extra resolution.
+
+From a single hotkey you can grab a full monitor, keep your preferred settings, and get subtle audio feedback that makes the flow feel instant.
 
 ## Features
 
@@ -10,6 +14,8 @@ Sharpshot is a lightweight, high-performance screen capture utility built with *
 - **Neumorphic UI**: A modern, tactile interface with glassmorphism effects and smooth animations.
 - **Persistence**: Remembers your preferred monitor, save path, global shortcut, and audio settings.
 - **Audio Feedback**: Satisfying camera shutter sounds with adjustable volume and mute toggle.
+
+![Sharpshot comparison](docs/resources/comparation.webp)
 
 ## Tech Stack
 
