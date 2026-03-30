@@ -23,11 +23,11 @@ function selectMonitor(id: number) {
 <template>
   <div class="card settings-card neu-flat flex flex-col gap-8 p-6">
     <div class="section-monitor">
-      <h2 class="card-title mb-4">Select Screen</h2>
+      <h2 class="card-title mb-8">Select Screen</h2>
 
       <div v-if="monitors.length === 0" class="no-monitors p-5">Loading monitors...</div>
 
-      <div v-else class="monitors-grid gap-5">
+      <div v-else class="monitors-grid gap-5 py-2">
         <button
           v-for="(monitor, index) in monitors"
           :key="monitor.id"
@@ -98,7 +98,7 @@ function selectMonitor(id: number) {
 }
 
 .monitor-btn.active {
-  border-color: var(--green-200);
+  border-color: var(--green-main);
   color: var(--green-400);
 }
 
@@ -119,8 +119,8 @@ function selectMonitor(id: number) {
 }
 
 .monitor-btn.active .monitor-preview {
-  background-color: var(--green-200);
-  border-color: var(--green-400);
+  background-color: var(--green-main);
+  border-color: var(--green-main);
   opacity: 1;
 }
 

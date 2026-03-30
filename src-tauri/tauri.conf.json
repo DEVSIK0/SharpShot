@@ -14,9 +14,9 @@
       {
         "title": "Sharpshot",
         "minWidth": 850,
-        "minHeight": 700,
+        "minHeight": 800,
         "maxWidth": 1000,
-        "maxHeight": 800,
+        "maxHeight": 850,
         "resizable": true,
         "devtools": false,
         "center": true,

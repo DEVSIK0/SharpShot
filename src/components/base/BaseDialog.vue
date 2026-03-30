@@ -90,8 +90,9 @@ onMounted(() => {
 }
 
 .base-dialog::backdrop {
-  background-color: rgba(240, 240, 240, 0.4);
+  background-color: var(--overlay-color);
   backdrop-filter: blur(8px);
+  transition: background-color 0.3s ease;
 }
 
 .dialog-fade-enter-active,

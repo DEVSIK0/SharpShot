@@ -9,13 +9,43 @@
 
   --shadow-light: #ffffff;
   --shadow-dark: #d1d9e6;
+  --overlay-color: rgba(240, 240, 240, 0.4);
 
+  --green-brand: #00af7a;
+  --green-brand-hover: #007751;
+  --green-brand-active: #003e28;
+  --green-surface: #e6f9f0;
+
+  --green-main: #14ffb4;
   --green-50: #14ffb4;
   --green-100: #00e39f;
   --green-200: #00af7a;
   --green-300: #007751;
   --green-400: #003e28;
   --green-500: #0f0f0f;
+}
+
+:root[data-theme="dark"] {
+  --bg-color: #2a2a2a;
+  --text-main: #f0f0f0;
+  --text-muted: #a0a0a0;
+
+  --shadow-light: #323232;
+  --shadow-dark: #222222;
+  --overlay-color: rgba(42, 42, 42, 0.4);
+
+  --green-brand: #14ffb4;
+  --green-brand-hover: #00e39f;
+  --green-brand-active: #00af7a;
+  --green-surface: #0f0f0f;
+
+  --green-main: #14ffb4;
+  --green-50: #0f0f0f;
+  --green-100: #003e28;
+  --green-200: #007751;
+  --green-300: #00af7a;
+  --green-400: #00e39f;
+  --green-500: #14ffb4;
 }
 
 * {
@@ -31,18 +61,21 @@ body {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .neu-flat {
   background: var(--bg-color);
   box-shadow: 7px 7px 14px var(--shadow-dark), -7px -7px 14px var(--shadow-light);
   border-radius: 20px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .neu-pressed {
   background: var(--bg-color);
   box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
   border-radius: 12px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .neu-btn {
@@ -53,7 +86,7 @@ body {
   color: var(--text-main);
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out, background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
 }
 
 .neu-btn:active {
@@ -83,4 +116,5 @@ body {
   border-radius: 8px;
   padding: 12px;
   color: var(--text-main);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
 }

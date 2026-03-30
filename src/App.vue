@@ -14,6 +14,7 @@ import SettingsDialog from "@/components/SettingsDialog.vue";
 import BaseToast from "@/components/base/BaseToast.vue";
 import { useToast } from "@/composables/useToast";
 import { useVersion } from "./composables/useVersion";
+import { useTheme } from "./composables/useTheme";
 
 const SAVE_PATH_KEY = "save_path";
 const HOTKEY_KEY_KEY = "hotkey_key";
@@ -31,6 +32,7 @@ const showSettings = ref(false);
 
 const toast = useToast("top-right");
 const { version } = useVersion();
+const { isDark, toggleTheme } = useTheme();
 
 const { playCameraSound } = useSoundSettings();
 
@@ -165,9 +167,14 @@ onUnmounted(async () => {
       <h1 class="app-title flex-1">
         Sharpshot <span class="version">{{ version }}</span>
       </h1>
-      <button type="button" class="hamburger-btn neu-btn flex items-center justify-center" @click="showSettings = true" aria-label="Open Settings">
-        <Icon icon="material-symbols:menu" style="font-size: 25px" />
-      </button>
+      <div class="flex items-center gap-4">
+        <button type="button" class="theme-btn neu-btn flex items-center justify-center" @click="toggleTheme" aria-label="Toggle Theme">
+          <Icon :icon="isDark ? 'material-symbols:dark-mode' : 'material-symbols:light-mode-outline-rounded'" style="font-size: 25px" />
+        </button>
+        <button type="button" class="hamburger-btn neu-btn flex items-center justify-center" @click="showSettings = true" aria-label="Open Settings">
+          <Icon icon="material-symbols:menu" style="font-size: 25px" />
+        </button>
+      </div>
     </header>
 
     <main class="content-area flex flex-col flex-1 gap-6 justify-around">
@@ -200,14 +207,17 @@ onUnmounted(async () => {
 .app-container {
   height: 100vh;
   background-color: var(--bg-color);
+  transition: background-color 0.3s ease;
 }
 
-.hamburger-btn {
+.hamburger-btn,
+.theme-btn {
   width: 48px;
   height: 48px;
   color: var(--text-muted);
 }
-.hamburger-btn:hover {
+.hamburger-btn:hover,
+.theme-btn:hover {
   color: var(--green-200);
 }
 
@@ -234,7 +244,7 @@ onUnmounted(async () => {
   max-width: 400px;
   height: 80px;
   font-size: 1.2rem;
-  color: var(--green-500);
+  color: var(--green-400);
   transition: transform 0.1s;
 }
 
