@@ -119,7 +119,7 @@ const capture = async () => {
     playCameraSound();
 
     const scaleFormatted = parseFloat(selectedScale.value.toString()).toFixed(1).replace(".", "p");
-    const filename = `Sharpshot_x${scaleFormatted}_${generateTimestamp()}.jpg`;
+    const filename = `Sharpshot_x${scaleFormatted}_${generateTimestamp()}.png`;
     const filePath = await join(savePath.value, filename);
 
     await invoke<string>("capture_and_scale", {
