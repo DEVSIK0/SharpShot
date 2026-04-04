@@ -66,20 +66,22 @@ const computedShortcut = computed(() => hotkeyKey.value.toUpperCase());
 </script>
 
 <template>
-  <div class="card hotkey-card neu-flat flex flex-col gap-[15px] p-6 h-full">
-    <h2 class="card-title m-0">Global Shortcut</h2>
-    <div class="control-group flex flex-col gap-2">
-      <label for="hotkey-select">Capture Key</label>
-      <div class="select-wrapper neu-pressed flex items-center px-3">
-        <select id="hotkey-select" v-model="hotkeyKey" :disabled="props.loading" class="select-input p-3">
-          <option v-for="key in keyOptions" :key="key" :value="key">
-            {{ key }}
-          </option>
-        </select>
-        <span class="custom-arrow">▼</span>
-      </div>
+  <div class="card hotkey-card neu-flat flex flex-row flex-wrap items-center justify-between gap-[10px] p-4 w-full h-full">
+    <h2 class="card-title m-0">GLOBAL SHORTCUT</h2>
+
+    <div class="select-wrapper neu-pressed flex-1 flex items-center h-[40px] px-3">
+      <select id="hotkey-select" v-model="hotkeyKey" :disabled="props.loading" class="select-input h-full w-full bg-transparent">
+        <option v-for="key in keyOptions" :key="key" :value="key">
+          {{ key }}
+        </option>
+      </select>
+      <span class="custom-arrow">▼</span>
     </div>
-    <button type="button" @click="emit('register')" :disabled="props.loading" class="hotkey-btn neu-btn w-full p-3 mt-auto">Apply ({{ computedShortcut }})</button>
+
+    <button type="button" @click="emit('register')" :disabled="props.loading" class="hotkey-btn gap-2 flex items-center h-[40px] neu-btn px-4 whitespace-nowrap">
+      <Icon icon="material-symbols:keyboard" />
+      <span>Apply ({{ computedShortcut }})</span>
+    </button>
   </div>
 </template>
 
@@ -90,6 +92,7 @@ const computedShortcut = computed(() => hotkeyKey.value.toUpperCase());
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
+  width: 100%;
 }
 
 label {

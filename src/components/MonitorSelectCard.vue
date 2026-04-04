@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import type { Monitor } from "@/types";
 
 const props = defineProps<{
@@ -8,11 +7,6 @@ const props = defineProps<{
 }>();
 
 const selectedMonitorId = defineModel<number | null>("selectedMonitorId");
-const selectedScale = defineModel<number>("selectedScale", { default: 2.0 });
-
-const scaleFixed = computed(() => {
-  return parseFloat(parseFloat(String(selectedScale.value)).toFixed(1));
-});
 
 function selectMonitor(id: number) {
   if (props.loading) return;
@@ -21,13 +15,13 @@ function selectMonitor(id: number) {
 </script>
 
 <template>
-  <div class="card settings-card neu-flat flex flex-col gap-8 p-6">
-    <div class="section-monitor">
-      <h2 class="card-title mb-8">Select Screen</h2>
+  <div class="card settings-card neu-flat flex flex-col gap-5 p-6 w-full h-full">
+    <div class="section-monitor flex flex-col h-full w-full">
+      <h2 class="card-title mb-4">Select Screen</h2>
 
-      <div v-if="monitors.length === 0" class="no-monitors p-5">Loading monitors...</div>
+      <div v-if="monitors.length === 0" class="no-monitors p-5 flex-1 flex items-center justify-center">Loading monitors...</div>
 
-      <div v-else class="monitors-grid gap-5 py-2">
+      <div v-else class="monitors-grid gap-5 py-2 flex-1 overflow-y-auto pr-2">
         <button
           v-for="(monitor, index) in monitors"
           :key="monitor.id"
@@ -37,33 +31,19 @@ function selectMonitor(id: number) {
           @click="selectMonitor(monitor.id)"
           :disabled="loading"
         >
-          <div class="monitor-preview-container flex items-center justify-center mb-3 w-full">
+          <div class="monitor-preview-container flex flex-1 items-center justify-center mb-3 w-full">
             <div class="monitor-preview" :style="{ aspectRatio: `${monitor.width}/${monitor.height}` }">
               <div v-if="monitor.is_primary" class="primary-badge px-[6px] py-[2px]">PRIMARY</div>
             </div>
           </div>
 
-          <div class="monitor-info flex flex-col gap-1 w-full">
+          <div class="monitor-info flex flex-col gap-1 w-full mt-auto">
             <span class="monitor-name" :title="monitor.name">Monitor {{ index + 1 }}</span>
             <span class="monitor-res">{{ monitor.width }} x {{ monitor.height }}</span>
           </div>
 
           <div class="status-indicator"></div>
         </button>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="section-scale">
-      <div class="range-header flex items-center justify-between mb-[10px]">
-        <h2 class="card-title mb-0">Capture Scale</h2>
-        <span class="range-value neu-pressed px-3 py-1">x{{ scaleFixed.toFixed(1) }}</span>
-      </div>
-      <input type="range" class="neu-range mt-[15px] mb-[5px]" id="scale-range" v-model.number="selectedScale" min="1.0" max="5.0" step="0.1" :disabled="loading" />
-      <div class="scale-labels flex justify-between px-1 mt-1">
-        <span>1x</span>
-        <span>5x</span>
       </div>
     </div>
   </div>
@@ -81,6 +61,7 @@ function selectMonitor(id: number) {
 .monitors-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  align-items: stretch;
 }
 
 .monitor-btn {
@@ -88,7 +69,7 @@ function selectMonitor(id: number) {
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
-  min-height: 140px;
+  height: 100%;
   color: var(--text-main);
   text-align: center;
 }
@@ -103,7 +84,8 @@ function selectMonitor(id: number) {
 }
 
 .monitor-preview-container {
-  height: 60px;
+  height: 50%;
+  min-height: 60px;
   width: 100%;
 }
 
@@ -146,7 +128,7 @@ function selectMonitor(id: number) {
 
 .monitor-name {
   font-weight: 600;
-  font-size: 0.9em;
+  font-size: clamp(0.75rem, 1vw, 0.9rem);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -162,61 +144,5 @@ function selectMonitor(id: number) {
   text-align: center;
   color: var(--text-muted);
   font-style: italic;
-}
-
-.divider {
-  height: 2px;
-  background: var(--bg-color);
-  box-shadow: inset 1px 1px 2px var(--shadow-dark), inset -1px -1px 2px var(--shadow-light);
-  border-radius: 2px;
-  width: 100%;
-}
-
-.range-value {
-  font-size: 0.85rem;
-  color: var(--green-300);
-  font-weight: bold;
-}
-
-.neu-range {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 100%;
-  background: transparent;
-}
-
-.neu-range:focus {
-  outline: none;
-}
-
-.neu-range::-webkit-slider-runnable-track {
-  width: 100%;
-  height: 12px;
-  cursor: pointer;
-  background: var(--bg-color);
-  border-radius: 6px;
-  box-shadow: inset 2px 2px 5px var(--shadow-dark), inset -2px -2px 5px var(--shadow-light);
-}
-
-.neu-range::-webkit-slider-thumb {
-  height: 24px;
-  width: 24px;
-  border-radius: 50%;
-  background: var(--bg-color);
-  cursor: pointer;
-  -webkit-appearance: none;
-  margin-top: -6px;
-  box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: background 0.2s;
-}
-
-.neu-range:active::-webkit-slider-thumb {
-  background: var(--green-50);
-}
-
-.scale-labels {
-  font-size: 0.75em;
-  color: var(--text-muted);
 }
 </style>

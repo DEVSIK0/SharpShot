@@ -13,11 +13,9 @@
     "windows": [
       {
         "title": "Sharpshot",
-        "minWidth": 850,
-        "minHeight": 800,
-        "maxWidth": 1000,
-        "maxHeight": 850,
-        "resizable": true,
+        "width": 900,
+        "height": 660,
+        "resizable": false,
         "devtools": false,
         "center": true,
         "transparent": false

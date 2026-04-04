@@ -1,8 +1,9 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use image::{imageops, imageops::FilterType};
+use image::{codecs::jpeg::JpegEncoder, imageops, imageops::FilterType, DynamicImage, ImageEncoder};
 use screenshots::Screen;
 use serde::Serialize;
+use std::fs::File;
 
 #[derive(Serialize, Clone)]
 struct Monitor {
@@ -72,7 +73,17 @@ fn capture_and_scale(monitor_id: u32, scale: f32, save_path: String) -> Result<S
     }
     let out_path = std::path::PathBuf::from(save_path);
     let scaled_image = imageops::resize(&rgba, target_w, target_h, FilterType::Lanczos3);
-    scaled_image.save(&out_path).map_err(|e| e.to_string())?;
+    
+    let rgb_image = DynamicImage::ImageRgba8(scaled_image).into_rgb8();
+    
+    let mut file = File::create(&out_path).map_err(|e| e.to_string())?;
+    let encoder = JpegEncoder::new_with_quality(&mut file, 90);
+    
+    let (sw, sh) = rgb_image.dimensions();
+    encoder
+        .write_image(rgb_image.as_raw(), sw, sh, image::ColorType::Rgb8)
+        .map_err(|e| e.to_string())?;
+
     Ok(out_path.to_string_lossy().to_string())
 }
 

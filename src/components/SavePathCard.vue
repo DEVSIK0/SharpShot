@@ -22,17 +22,17 @@ const selectSavePath = async () => {
 </script>
 
 <template>
-  <div class="card save-card neu-flat flex flex-row flex-wrap items-center gap-[15px] p-5">
+  <div class="card save-card neu-flat flex flex-row flex-wrap items-center justify-between gap-[10px] p-4 w-full h-full">
     <h2 class="card-title m-0">DESTINATION FOLDER</h2>
 
-    <div class="path-info neu-pressed p-3 flex-1">
+    <div class="path-info neu-pressed px-3 flex-1 flex items-center h-[40px]">
       <p v-if="savePath" class="path-display m-0" title="{{ savePath }}">
         {{ savePath }}
       </p>
       <p v-else class="path-display text-muted m-0">No path selected...</p>
     </div>
 
-    <button @click="selectSavePath" :disabled="props.loading" class="select-btn gap-2 flex items-center neu-btn py-3 px-5">
+    <button @click="selectSavePath" :disabled="props.loading" class="select-btn gap-2 flex items-center h-[40px] neu-btn px-4">
       <Icon icon="material-symbols:folder" />
       <span> {{ savePath ? "Change" : "Select" }} </span>
     </button>

@@ -8,6 +8,7 @@ import { useSoundSettings } from "@/composables/useSoundSettings";
 import type { Monitor } from "@/types";
 
 import MonitorSelectCard from "@/components/MonitorSelectCard.vue";
+import CaptureScaleCard from "@/components/CaptureScaleCard.vue";
 import SavePathCard from "@/components/SavePathCard.vue";
 import HotkeyCard from "@/components/HotkeyCard.vue";
 import SettingsDialog from "@/components/SettingsDialog.vue";
@@ -119,7 +120,7 @@ const capture = async () => {
     playCameraSound();
 
     const scaleFormatted = parseFloat(selectedScale.value.toString()).toFixed(1).replace(".", "p");
-    const filename = `Sharpshot_x${scaleFormatted}_${generateTimestamp()}.png`;
+    const filename = `Sharpshot_x${scaleFormatted}_${generateTimestamp()}.jpg`;
     const filePath = await join(savePath.value, filename);
 
     await invoke<string>("capture_and_scale", {
@@ -162,12 +163,12 @@ onUnmounted(async () => {
 </script>
 
 <template>
-  <div class="app-container flex flex-col p-6 gap-[30px]">
-    <header class="top-bar flex items-center justify-between px-[10px]">
+  <div class="app-container flex flex-col p-8 gap-[20px]">
+    <header class="top-bar flex items-center justify-between px-[5px]">
       <h1 class="app-title flex-1">
         Sharpshot <span class="version">{{ version }}</span>
       </h1>
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-5">
         <button type="button" class="theme-btn neu-btn flex items-center justify-center" @click="toggleTheme" aria-label="Toggle Theme">
           <Icon :icon="isDark ? 'material-symbols:dark-mode' : 'material-symbols:light-mode-outline-rounded'" style="font-size: 25px" />
         </button>
@@ -177,23 +178,36 @@ onUnmounted(async () => {
       </div>
     </header>
 
-    <main class="content-area flex flex-col flex-1 gap-6 justify-around">
-      <div class="cards-grid gap-6 items-stretch">
-        <MonitorSelectCard :monitors="monitors" v-model:selectedMonitorId="selectedMonitor" v-model:selectedScale="selectedScale" :loading="loading" />
-
-        <div class="sub-grid flex flex-col gap-6">
-          <SavePathCard v-model:savePath="savePath" :loading="loading" />
-          <HotkeyCard v-model:hotkeyKey="hotkeyKey" :loading="loading" @register="registerShortcut" />
+    <main class="content-area flex flex-col flex-1 gap-8 pb-8 px-[15px] pt-[15px] overflow-auto">
+      <div class="custom-grid gap-8">
+        <div class="grid-item item-monitors">
+          <MonitorSelectCard :monitors="monitors" v-model:selectedMonitorId="selectedMonitor" :loading="loading" class="h-full" />
         </div>
-      </div>
+        
+        <div class="grid-item item-scale">
+          <CaptureScaleCard v-model:selectedScale="selectedScale" :loading="loading" class="h-full" />
+        </div>
 
-      <div class="footer-action flex flex-col items-center gap-5 mb-5">
-        <button @click="capture" :disabled="loading || selectedMonitor === null || !savePath" class="capture-btn neu-btn flex items-center justify-center gap-4">
-          <Icon class="btn-content" :class="{ spinning: loading }" :icon="loading ? 'material-symbols:hourglass-top' : 'material-symbols:radio-button-checked'" />
-          <span class="btn-text">
-            {{ loading ? "Processing..." : "CAPTURE NOW" }}
-          </span>
-        </button>
+        <div class="grid-item item-path">
+          <SavePathCard v-model:savePath="savePath" :loading="loading" class="h-full" />
+        </div>
+        
+        <div class="grid-item item-hotkey">
+          <HotkeyCard v-model:hotkeyKey="hotkeyKey" :loading="loading" @register="registerShortcut" class="h-full" />
+        </div>
+
+        <div class="grid-item item-empty-left"></div>
+
+        <div class="grid-item item-button">
+          <button @click="capture" :disabled="loading || selectedMonitor === null || !savePath" class="capture-btn neu-btn card flex items-center justify-center gap-4 w-full h-full">
+            <Icon class="btn-content" :class="{ spinning: loading }" :icon="loading ? 'material-symbols:hourglass-top' : 'material-symbols:radio-button-checked'" />
+            <span class="btn-text" style="font-weight: 800; letter-spacing: 1px;">
+              {{ loading ? "PROCESSING..." : "CAPTURE NOW" }}
+            </span>
+          </button>
+        </div>
+
+        <div class="grid-item item-empty-right"></div>
       </div>
     </main>
 
@@ -234,22 +248,83 @@ onUnmounted(async () => {
   color: var(--green-200);
 }
 
-.cards-grid {
+.custom-grid {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, minmax(100px, 1fr));
+  width: 100%;
+  height: 100%;
+}
+
+.item-monitors {
+  grid-column: 1 / span 2;
+  grid-row: 1 / span 3;
+}
+
+.item-scale {
+  grid-column: 3 / span 2;
+  grid-row: 1;
+}
+
+.item-path {
+  grid-column: 3 / span 2;
+  grid-row: 2;
+}
+
+.item-hotkey {
+  grid-column: 3 / span 2;
+  grid-row: 3;
+}
+
+.item-empty-left {
+  grid-column: 1;
+  grid-row: 4;
+}
+
+.item-button {
+  grid-column: 2 / span 2;
+  grid-row: 4;
+}
+
+.item-empty-right {
+  grid-column: 4;
+  grid-row: 4;
+}
+
+@media (max-width: 800px) {
+  .custom-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+  .item-monitors,
+  .item-scale,
+  .item-path,
+  .item-hotkey,
+  .item-button {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+  .item-empty-left,
+  .item-empty-right {
+    display: none;
+  }
 }
 
 .capture-btn {
   width: 100%;
-  max-width: 400px;
-  height: 80px;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   color: var(--green-400);
-  transition: transform 0.1s;
+  transition: transform 0.1s, box-shadow 0.2s;
+  cursor: pointer;
+  border: none;
 }
 
 .capture-btn:active:not(:disabled) {
   transform: scale(0.98);
+}
+.capture-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .status-msg {
@@ -270,12 +345,6 @@ onUnmounted(async () => {
   }
   to {
     transform: rotate(360deg);
-  }
-}
-
-@media (max-width: 700px) {
-  .cards-grid {
-    grid-template-columns: 1fr;
   }
 }
 </style>
