@@ -19,17 +19,17 @@ function selectMonitor(id: number) {
     <div class="section-monitor flex flex-col h-full w-full">
       <h2 class="card-title mb-4">Select Screen</h2>
 
-      <div v-if="monitors.length === 0" class="no-monitors p-5 flex-1 flex items-center justify-center">Loading monitors...</div>
+      <div v-if="props.monitors.length === 0" class="no-monitors p-5 flex-1 flex items-center justify-center">Loading monitors...</div>
 
       <div v-else class="monitors-grid gap-5 py-2 flex-1 overflow-y-auto pr-2">
         <button
-          v-for="(monitor, index) in monitors"
+          v-for="(monitor, index) in props.monitors"
           :key="monitor.id"
           type="button"
           class="monitor-btn flex flex-col items-center p-4"
           :class="selectedMonitorId === monitor.id ? 'neu-pressed active' : 'neu-flat'"
           @click="selectMonitor(monitor.id)"
-          :disabled="loading"
+          :disabled="props.loading"
         >
           <div class="monitor-preview-container flex flex-1 items-center justify-center mb-3 w-full">
             <div class="monitor-preview" :style="{ aspectRatio: `${monitor.width}/${monitor.height}` }">

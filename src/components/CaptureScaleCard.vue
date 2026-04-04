@@ -19,7 +19,7 @@ const scaleFixed = computed(() => {
         <h2 class="card-title m-0">Capture Scale</h2>
         <span class="range-value neu-pressed px-2 py-1">x{{ scaleFixed.toFixed(1) }}</span>
       </div>
-      <input type="range" class="neu-range mt-[10px] mb-[5px]" id="scale-range" v-model.number="selectedScale" min="1.0" max="5.0" step="0.1" :disabled="loading" />
+      <input type="range" class="neu-range mt-[10px] mb-[5px]" id="scale-range" v-model.number="selectedScale" min="1.0" max="5.0" step="0.1" :disabled="props.loading" />
       <div class="scale-labels flex justify-between px-1">
         <span>1x</span>
         <span>5x</span>

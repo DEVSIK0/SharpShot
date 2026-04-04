@@ -40,9 +40,9 @@ onMounted(() => {
   <Transition name="dialog-fade">
     <dialog v-show="open" ref="REF_DIALOG" class="base-dialog neu-flat" @close="() => (open = false)" @click="onBackdropClick">
       <div class="dialog-container">
-        <header v-if="showHeader" class="dialog-header">
+        <header v-if="props.showHeader" class="dialog-header">
           <slot name="header">
-            <h3 class="dialog-title">{{ title }}</h3>
+            <h3 class="dialog-title">{{ props.title }}</h3>
           </slot>
 
           <button class="close-btn neu-btn" @click="dialog?.close()" type="button">
@@ -67,7 +67,7 @@ onMounted(() => {
           <slot name="content" />
         </div>
 
-        <footer v-if="showFooter" class="dialog-footer">
+        <footer v-if="props.showFooter" class="dialog-footer">
           <slot name="footer" />
         </footer>
       </div>
