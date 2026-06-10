@@ -73,11 +73,10 @@ fn capture_and_scale(monitor_id: u32, scale: f32, save_path: String) -> Result<S
     }
     let out_path = std::path::PathBuf::from(save_path);
     let scaled_image = imageops::resize(&rgba, target_w, target_h, FilterType::Lanczos3);
-    
-    let rgb_image = DynamicImage::ImageRgba8(scaled_image).into_rgb8();
-    
+    let sharpened = imageops::unsharpen(&scaled_image, 0.6, 10);
+    let rgb_image = DynamicImage::ImageRgba8(sharpened).into_rgb8();
     let mut file = File::create(&out_path).map_err(|e| e.to_string())?;
-    let encoder = JpegEncoder::new_with_quality(&mut file, 90);
+    let encoder = JpegEncoder::new_with_quality(&mut file, 95);
     
     let (sw, sh) = rgb_image.dimensions();
     encoder
